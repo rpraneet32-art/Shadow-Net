@@ -1,0 +1,16 @@
+# Environment files (Single Source of Truth credentials)
+.env
+*.env
+shadownet/.env
+*.env.local
+
+# Attack logs and network captures (runtime artifacts for Blocks 2 & 3)
+shadownet/logs/*
+!shadownet/logs/.gitkeep
+shadownet/captures/*
+!shadownet/captures/.gitkeep
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+*.swp

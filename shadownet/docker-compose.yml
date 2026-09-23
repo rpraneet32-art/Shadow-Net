@@ -1,0 +1,46 @@
+networks:
+  twin-net:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: shadownet-db
+    networks:
+      twin-net:
+        ipv4_address: ${DB_HOST:-10.10.0.11}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-dvwa_root_pass}
+      MYSQL_DATABASE: ${DB_NAME:-dvwa}
+      MYSQL_USER: ${DB_USER:-dvwa}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-p@ssw0rd}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - db-data:/var/lib/mysql
+    restart: unless-stopped
+
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: shadownet-dvwa
+    depends_on:
+      - db
+    networks:
+      twin-net:
+        ipv4_address: ${DVWA_IP:-10.10.0.10}
+    environment:
+      DB_SERVER: ${DB_HOST:-10.10.0.11}
+      DB_DATABASE: ${DB_NAME:-dvwa}
+      DB_USER: ${DB_USER:-dvwa}
+      DB_PASSWORD: ${DB_PASSWORD:-p@ssw0rd}
+      DEFAULT_SECURITY_LEVEL: ${DEFAULT_SECURITY_LEVEL:-low}
+    volumes:
+      - ./config.inc.php:/var/www/html/config/config.inc.php:ro
+      - ./.env:/var/www/html/config/.env:ro
+    restart: unless-stopped
+
+volumes:
+  db-data:
