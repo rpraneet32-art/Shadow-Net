@@ -55,6 +55,8 @@ services:
       - ./captures:/captures
       - ./attacker/run_attacks.sh:/root/attacks/run_attacks.sh:ro
       - ./attacker/passwords.txt:/root/attacks/passwords.txt:ro
+      - ./scripts:/root/attacks/scripts:ro
+      - ./run_pipeline.sh:/root/attacks/run_pipeline.sh:ro
     depends_on:
       - dvwa
     cap_add:
